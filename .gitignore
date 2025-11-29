@@ -1,0 +1,8 @@
+*__pyache__cache__/
+*.pyc
+*venv/
+.env    
+bar_codes/
+qr_codes/
+*xlsx/
+logs/

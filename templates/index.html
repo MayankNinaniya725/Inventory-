@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Scanner</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; width: 60%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #eee; }
+        input { padding: 5px; width: 150px; margin-right: 10px; }
+        button { padding: 5px 10px; }
+        .message { color: green; font-weight: bold; margin: 15px 0; }
+        .out-of-stock { background-color: #ffe6e6; }
+        .status-out { color: red; font-weight: bold; }
+        .status-in { color: green; }
+        form { margin: 10px 0; }
+        small { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>Inventory Management System</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <h3>Scan Single Item</h3>
+        <form method="post" action="/scan_item/" style="margin-bottom: 15px;">
+            <label>Enter Item ID:</label>
+            <input type="number" name="item_id" required>
+            <button type="submit">Scan Item</button>
+            <small style="display: block; color: #666;">Scans one unit and adds to purchase list</small>
+        </form>
+        
+        <h3>Search & Move Item</h3>
+        <form method="post" action="/search_item/">
+            <label>Search by ID or Name:</label>
+            <input type="text" name="search_query" placeholder="101 or Item A" required>
+            <button type="submit">Search & Move to Purchase</button>
+            <small style="display: block; color: #666;">Moves entire stock to purchase list</small>
+        </form>
+    </div>
+    
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+    
+    <h2>Main Inventory</h2>
+    <table>
+        <tr><th>ID</th><th>Name</th><th>Quantity</th><th>Price</th><th>Status</th></tr>
+        {% for item in inventory %}
+        <tr style="{% if item['status'] == 'out_of_stock' %}background-color: #ffe6e6;{% endif %}">
+            <td>{{ item['id'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['quantity'] }}</td>
+            <td>${{ "%.2f"|format(item['price']) }}</td>
+            <td style="{% if item['status'] == 'out_of_stock' %}color: red; font-weight: bold;{% else %}color: green;{% endif %}">
+                {{ item['status']|replace('_', ' ')|title }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Purchase List</h2>
+    <table>
+        <tr><th>ID</th><th>Name</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
+        {% for item in purchase_list %}
+        <tr>
+            <td>{{ item['id'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['quantity'] }}</td>
+            <td>${{ "%.2f"|format(item['price']) }}</td>
+            <td>${{ "%.2f"|format(item['price'] * item['quantity']) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
